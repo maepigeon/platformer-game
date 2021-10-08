@@ -1,0 +1,27 @@
+[gd_scene load_steps=3 format=2]
+
+[sub_resource type="GDScript" id=1]
+script/source = "extends Area2D
+
+export var change_x = false
+export var change_y = false
+export var new_x = 0
+export var new_y = 0
+
+func _on_Portal_body_entered(body):
+	if body.is_in_group(\"Players\") or body.is_in_group(\"Enemies\"):
+		if change_x:
+			body.position.x = new_x
+		if change_y:
+			body.position.y = new_y
+"
+
+[sub_resource type="RectangleShape2D" id=2]
+extents = Vector2( 5.64658, 20.2592 )
+
+[node name="Portal" type="Area2D"]
+script = SubResource( 1 )
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource( 2 )
+[connection signal="body_entered" from="." to="." method="_on_Portal_body_entered"]

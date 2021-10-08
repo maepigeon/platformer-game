@@ -1,0 +1,105 @@
+[gd_scene load_steps=6 format=2]
+
+[ext_resource path="res://game_elements/HUD.gd" type="Script" id=1]
+[ext_resource path="res://shaders_and_materials/bitneko_dynamicfont.tres" type="DynamicFont" id=2]
+[ext_resource path="res://art/ui/heart.png" type="Texture" id=3]
+[ext_resource path="res://art/ui/coingui.png" type="Texture" id=4]
+[ext_resource path="res://art/ui/nocoingui.png" type="Texture" id=5]
+
+[node name="HUD" type="CanvasLayer"]
+script = ExtResource( 1 )
+heart_icon = ExtResource( 3 )
+coin_icon = ExtResource( 4 )
+no_coin_icon = ExtResource( 5 )
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+margin_left = 160.0
+margin_right = 230.0
+margin_bottom = 40.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer"]
+margin_right = 70.0
+margin_bottom = 13.0
+size_flags_vertical = 0
+
+[node name="Label" type="Label" parent="MarginContainer/HBoxContainer"]
+margin_right = 26.0
+margin_bottom = 13.0
+custom_fonts/font = ExtResource( 2 )
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+text = "Score: "
+max_lines_visible = 1
+
+[node name="Score" type="Label" parent="MarginContainer/HBoxContainer"]
+margin_left = 30.0
+margin_right = 70.0
+margin_bottom = 13.0
+custom_fonts/font = ExtResource( 2 )
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+text = "00000000"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="hearts" type="MarginContainer" parent="."]
+margin_left = 2.0
+margin_top = 2.0
+margin_right = 40.0
+margin_bottom = 40.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="vbox" type="VBoxContainer" parent="hearts"]
+margin_right = 38.0
+margin_bottom = 41.0
+
+[node name="heart1" type="TextureRect" parent="hearts/vbox"]
+margin_right = 38.0
+margin_bottom = 11.0
+texture = ExtResource( 3 )
+
+[node name="heart2" type="TextureRect" parent="hearts/vbox"]
+margin_top = 15.0
+margin_right = 38.0
+margin_bottom = 26.0
+texture = ExtResource( 3 )
+
+[node name="heart3" type="TextureRect" parent="hearts/vbox"]
+margin_top = 30.0
+margin_right = 38.0
+margin_bottom = 41.0
+texture = ExtResource( 3 )
+
+[node name="big_coins" type="MarginContainer" parent="."]
+margin_left = 16.0
+margin_top = 2.0
+margin_right = 54.0
+margin_bottom = 43.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="vbox" type="VBoxContainer" parent="big_coins"]
+margin_right = 38.0
+margin_bottom = 41.0
+
+[node name="coin1" type="TextureRect" parent="big_coins/vbox"]
+margin_right = 38.0
+margin_bottom = 11.0
+texture = ExtResource( 5 )
+
+[node name="coin2" type="TextureRect" parent="big_coins/vbox"]
+margin_top = 15.0
+margin_right = 38.0
+margin_bottom = 26.0
+texture = ExtResource( 5 )
+
+[node name="coin3" type="TextureRect" parent="big_coins/vbox"]
+margin_top = 30.0
+margin_right = 38.0
+margin_bottom = 41.0
+texture = ExtResource( 5 )

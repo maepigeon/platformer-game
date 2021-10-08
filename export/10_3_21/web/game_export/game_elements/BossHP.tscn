@@ -1,0 +1,23 @@
+[gd_scene load_steps=4 format=2]
+
+[ext_resource path="res://shaders_and_materials/bitneko_dynamicfont.tres" type="DynamicFont" id=1]
+[ext_resource path="res://art/ui/bosshp.png" type="Texture" id=2]
+[ext_resource path="res://game_elements/BossHP.gd" type="Script" id=3]
+
+[node name="BossHP" type="Node2D"]
+script = ExtResource( 3 )
+
+[node name="Label" type="Label" parent="."]
+margin_left = 6.0
+margin_top = 4.0
+margin_right = 46.0
+margin_bottom = 18.0
+custom_fonts/font = ExtResource( 1 )
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+text = "3"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="bosshp" type="Sprite" parent="."]
+texture = ExtResource( 2 )

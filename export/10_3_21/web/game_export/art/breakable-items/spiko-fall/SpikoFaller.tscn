@@ -1,0 +1,44 @@
+[gd_scene load_steps=5 format=2]
+
+[ext_resource path="res://art/breakable-items/web/Web.tscn" type="PackedScene" id=1]
+[ext_resource path="res://art/breakable-items/spiko-fall/spiko-faller.png" type="Texture" id=2]
+[ext_resource path="res://art/breakable-items/spiko-fall/SpikoFaller.gd" type="Script" id=3]
+
+[sub_resource type="Animation" id=1]
+resource_name = "spikofaller"
+tracks/0/type = "method"
+tracks/0/path = NodePath(".")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"values": [ {
+"args": [  ],
+"method": "kill_in_area"
+} ]
+}
+tracks/1/type = "value"
+tracks/1/path = NodePath("Sprite:texture")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ ExtResource( 2 ) ]
+}
+
+[node name="Spikofaller" instance=ExtResource( 1 )]
+script = ExtResource( 3 )
+anim_name = "spikofaller"
+
+[node name="Sprite" parent="." index="2"]
+texture = ExtResource( 2 )
+
+[node name="Anim" parent="." index="3"]
+anims/spikofaller = SubResource( 1 )

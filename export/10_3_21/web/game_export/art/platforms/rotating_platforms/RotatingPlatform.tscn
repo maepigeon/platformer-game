@@ -1,0 +1,32 @@
+[gd_scene load_steps=5 format=2]
+
+[ext_resource path="res://interactive_elements/MovingPlatform.tscn" type="PackedScene" id=1]
+[ext_resource path="res://art/platforms/rotating_platforms/RotatingPlatform.gd" type="Script" id=2]
+[ext_resource path="res://art/platforms/rotating_platforms/rotating_platform.png" type="Texture" id=3]
+
+[sub_resource type="SpriteFrames" id=1]
+animations = [ {
+"frames": [ ExtResource( 3 ) ],
+"loop": true,
+"name": "default",
+"speed": 5.0
+} ]
+
+[node name="MovingPlatform" instance=ExtResource( 1 )]
+script = ExtResource( 2 )
+follow = Vector2( 0, 0 )
+rotation_speed = 120
+wait_time = 1.0
+start_rotation = 90
+end_rotation = 0
+
+[node name="platform" parent="." index="1"]
+collision_layer = 16
+script = null
+
+[node name="CollisionShape2D" parent="platform" index="0"]
+position = Vector2( -20, 0 )
+
+[node name="AnimatedSprite" parent="platform" index="1"]
+position = Vector2( -20, 0 )
+frames = SubResource( 1 )
