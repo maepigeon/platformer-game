@@ -1,0 +1,47 @@
+[gd_scene load_steps=9 format=2]
+
+[ext_resource path="res://art/platforms/magic carpet/magic_carpet_1.png" type="Texture" id=2]
+[ext_resource path="res://art/platforms/magic carpet/magic_carpet_3.png" type="Texture" id=3]
+[ext_resource path="res://art/platforms/magic carpet/magic_carpet_4.png" type="Texture" id=4]
+[ext_resource path="res://art/platforms/magic carpet/magic_carpet_2.png" type="Texture" id=5]
+[ext_resource path="res://art/platforms/magic carpet/MagicCarpet.gd" type="Script" id=6]
+
+[sub_resource type="RectangleShape2D" id=1]
+extents = Vector2( 23.7556, 5.82509 )
+
+[sub_resource type="SpriteFrames" id=2]
+animations = [ {
+"frames": [ ExtResource( 2 ), ExtResource( 5 ), ExtResource( 3 ), ExtResource( 4 ) ],
+"loop": true,
+"name": "default",
+"speed": 12.0
+} ]
+
+[sub_resource type="RectangleShape2D" id=3]
+extents = Vector2( 11.5637, 2.38629 )
+
+[node name="platform" type="KinematicBody2D"]
+collision_layer = 16
+motion/sync_to_physics = true
+script = ExtResource( 6 )
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2( 0.0701523, -0.56123 )
+shape = SubResource( 1 )
+
+[node name="AnimatedSprite" type="AnimatedSprite" parent="."]
+frames = SubResource( 2 )
+frame = 3
+playing = true
+
+[node name="Area2D" type="Area2D" parent="."]
+collision_layer = 512
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
+position = Vector2( 1.40307, -4.55999 )
+shape = SubResource( 3 )
+
+[node name="MoveTween" type="Tween" parent="."]
+playback_process_mode = 0
+
+[connection signal="body_entered" from="Area2D" to="." method="_on_Area2D_body_entered"]

@@ -1,0 +1,461 @@
+[gd_scene load_steps=30 format=2]
+
+[ext_resource path="res://worlds/WorldBase.tscn" type="PackedScene" id=1]
+[ext_resource path="res://art/platforms/cactus/cactus.tscn" type="PackedScene" id=2]
+[ext_resource path="res://worlds/camera/CameraEffects.tscn" type="PackedScene" id=3]
+[ext_resource path="res://worlds/world3/HPlayerFollower.gd" type="Script" id=4]
+[ext_resource path="res://art/player/CameraFixer.tscn" type="PackedScene" id=5]
+[ext_resource path="res://art/breakable-items/jar/items/Coin.tscn" type="PackedScene" id=6]
+[ext_resource path="res://art/backgrounds/ParallaxBackground.tscn" type="PackedScene" id=7]
+[ext_resource path="res://worlds/camera/Camera.tscn" type="PackedScene" id=8]
+[ext_resource path="res://art/breakable-items/jar/items/rightsign.png" type="Texture" id=9]
+[ext_resource path="res://art/platforms/clouds/CloudPlatform.tscn" type="PackedScene" id=10]
+[ext_resource path="res://art/Door/Tower.tscn" type="PackedScene" id=11]
+[ext_resource path="res://worlds/BigCoin.tscn" type="PackedScene" id=12]
+[ext_resource path="res://Enemy.tscn" type="PackedScene" id=13]
+[ext_resource path="res://interactive_elements/Hplatform.tscn" type="PackedScene" id=14]
+[ext_resource path="res://interactive_elements/fallzone/FallZone.tscn" type="PackedScene" id=15]
+[ext_resource path="res://interactive_elements/ladder/LadderGenerator.tscn" type="PackedScene" id=16]
+[ext_resource path="res://art/breakable-items/jar/items/Sign.tscn" type="PackedScene" id=17]
+[ext_resource path="res://tilemap_world.tres" type="TileSet" id=18]
+[ext_resource path="res://art/enemies/B-Owl/B-Owl.tscn" type="PackedScene" id=19]
+[ext_resource path="res://Spiko-O.tscn" type="PackedScene" id=20]
+[ext_resource path="res://art/platforms/pipes/enemyspawner/Pipe.tscn" type="PackedScene" id=21]
+[ext_resource path="res://worlds/world1/InsideTower.tscn" type="PackedScene" id=22]
+[ext_resource path="res://worlds/BigCoin3World1.gd" type="Script" id=23]
+[ext_resource path="res://art/enemies/gun/Gun.tscn" type="PackedScene" id=24]
+[ext_resource path="res://art/breakable-items/jar/heartjar.tscn" type="PackedScene" id=26]
+[ext_resource path="res://New Anim.tres" type="Animation" id=27]
+
+[sub_resource type="GDScript" id=1]
+script/source = "extends Area2D
+
+onready var anim_player: AnimationPlayer = get_node(\"AnimationPlayer\")
+export var points = 500
+
+var gone = false
+func _on_body_entered(body):
+	if !gone:
+		anim_player.play(\"fade_out\")
+		gone = true
+		$coin_sound.play()
+		PlayerStats.increase_score(points)
+	_unique_function()
+
+func _unique_function():
+	pass
+"
+
+[sub_resource type="GDScript" id=2]
+script/source = "extends Area2D
+
+export(PackedScene) var target_scene
+onready var door_sound = $door_sound
+export var level = -1
+
+func _input(event):
+	if Input.is_action_just_pressed(\"ui_up\"):
+		if get_overlapping_bodies().size() > 0:
+			if !target_scene: # is null
+				print(\"no scene in this door\")
+				return
+			var player = get_overlapping_bodies()[0]
+			if !player.is_in_group(\"Players\"):
+				return #not overlapping the door
+			$AnimationPlayer.play(\"Open\")
+			door_sound.play()
+			var body = get_overlapping_bodies()[0]
+			var pos = body.get_global_transform_with_canvas().origin
+
+			$circle_transition.door_transition(pos)
+			get_overlapping_bodies()[0].play_walk_in_animation() #0 will be our player
+
+func next_level():
+	var ERR = SaveSystem.change_scene_to(target_scene, level)
+	
+	if ERR != OK:
+		print(\"something failed in the door scene\")
+		
+
+
+
+"
+
+[sub_resource type="RectangleShape2D" id=3]
+extents = Vector2( 1268, 4 )
+
+[node name="WorldBase" instance=ExtResource( 1 )]
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="." index="2"]
+root_node = NodePath("")
+anims/animation = ExtResource( 27 )
+
+[node name="Player" parent="." index="4"]
+position = Vector2( 124, 118 )
+
+[node name="ParallaxBackground" parent="Player" index="0" instance=ExtResource( 7 )]
+offset = Vector2( -150, -68 )
+transform = Transform2D( 1, 0, 0, 1, -150, -68 )
+follow_viewport_scale = 0.2
+scroll_base_scale = Vector2( 1, 0 )
+
+[node name="ShakeCamera2D" parent="Player" index="6"]
+target = NodePath("../../HFollower")
+
+[node name="TileMap" parent="." index="5"]
+tile_data = PoolIntArray( 524288, 35, 0 )
+
+[node name="cactus" parent="." index="6" instance=ExtResource( 2 )]
+position = Vector2( 64, 120 )
+height = 2
+
+[node name="cactus2" parent="." index="7" instance=ExtResource( 2 )]
+position = Vector2( 200, 120 )
+height = 3
+
+[node name="cactus4" parent="." index="8" instance=ExtResource( 2 )]
+position = Vector2( 600, 120 )
+height = 3
+
+[node name="cactus3" parent="." index="9" instance=ExtResource( 2 )]
+position = Vector2( 280, 120 )
+height = 1
+
+[node name="Camera" parent="." index="10" instance=ExtResource( 8 )]
+position = Vector2( 110.618, 28.1938 )
+
+[node name="Pipe" parent="." index="11" instance=ExtResource( 21 )]
+position = Vector2( 948, 116 )
+start_scene = ExtResource( 13 )
+spawn_time = 2.0
+destroy_enemy_after_time = 8
+
+[node name="TileMap2" type="TileMap" parent="." index="12"]
+tile_set = ExtResource( 18 )
+cell_size = Vector2( 16, 16 )
+collision_layer = 16
+format = 1
+tile_data = PoolIntArray( -65534, 20, 0, -65533, 21, 0, -65532, 21, 0, -65531, 21, 0, -65530, 21, 0, -65529, 21, 0, -65528, 21, 0, -65527, 21, 0, -65526, 21, 0, -65525, 21, 0, -65524, 21, 0, -65523, 21, 0, -65522, 21, 0, -65521, 21, 0, -65520, 21, 0, -65519, 21, 0, -65518, 22, 0, -65507, 20, 0, -65506, 21, 0, -65505, 21, 0, -65504, 21, 0, -65503, 21, 0, -65502, 21, 0, -65501, 21, 0, -65500, 21, 0, -65499, 21, 0, -65498, 21, 0, -65497, 21, 0, -65496, 21, 0, -65495, 21, 0, -65494, 21, 0, -65493, 21, 0, -65492, 21, 0, -65491, 21, 0, -65490, 22, 0, -65486, 20, 0, -65485, 21, 0, -65484, 21, 0, -65483, 21, 0, -65482, 21, 0, -65481, 21, 0, -65480, 21, 0, -65479, 21, 0, -65478, 21, 0, -65477, 21, 0, -65476, 21, 0, -65475, 22, 0, 65534, 20, 0, 65535, 22, 0, 2, 24, 0, 3, 26, 0, 4, 26, 0, 5, 26, 0, 6, 26, 0, 7, 26, 0, 8, 26, 0, 9, 3, 0, 10, 30, 0, 11, 30, 0, 12, 30, 0, 13, 30, 0, 14, 30, 0, 15, 30, 0, 16, 30, 0, 17, 10, 0, 18, 27, 0, 29, 29, 0, 30, 30, 0, 31, 30, 0, 32, 30, 0, 33, 30, 0, 34, 30, 0, 35, 30, 0, 36, 30, 0, 37, 39, 0, 38, 30, 0, 39, 30, 0, 40, 30, 0, 41, 30, 0, 42, 30, 0, 43, 30, 0, 44, 30, 0, 45, 30, 0, 46, 37, 0, 50, 29, 0, 51, 30, 0, 52, 30, 0, 53, 30, 0, 54, 30, 0, 55, 30, 0, 56, 30, 0, 57, 30, 0, 58, 30, 0, 59, 30, 0, 60, 30, 0, 61, 37, 0, 74, 33, 0, 75, 36, 0, 76, 34, 0, 131070, 29, 0, 131071, 37, 0, 65538, 24, 0, 65539, 26, 0, 65540, 26, 0, 65541, 26, 0, 65542, 26, 0, 65543, 26, 0, 65544, 26, 0, 65545, 27, 0, 65553, 24, 0, 65554, 27, 0, 65573, 32, 0, 131074, 29, 0, 131075, 30, 0, 131076, 30, 0, 131077, 30, 0, 131078, 30, 0, 131079, 30, 0, 131080, 30, 0, 131081, 37, 0, 131089, 29, 0, 131090, 37, 0, 196660, 33, 0, 196661, 36, 0, 196662, 36, 0, 196663, 36, 0, 196664, 36, 0, 196665, 36, 0, 196666, 36, 0, 196667, 36, 0, 196668, 22, 0, 196687, 23, 0, 262204, 28, 0, 262222, 20, 0, 262223, 39, 0, 262224, 22, 0, 327740, 28, 0, 327757, 20, 0, 327758, 38, 0, 327759, 39, 0, 327760, 1, 0, 327761, 22, 0, 393276, 28, 0, 393292, 20, 0, 393293, 38, 0, 393294, 39, 0, 393295, 39, 0, 393296, 39, 0, 393297, 1, 0, 393298, 22, 0, 458812, 28, 0, 458827, 20, 0, 458828, 38, 0, 458829, 39, 0, 458830, 39, 0, 458831, 39, 0, 458832, 39, 0, 458833, 39, 0, 458834, 1, 0, 458835, 22, 0, 524290, 20, 0, 524291, 21, 0, 524292, 21, 0, 524293, 21, 0, 524294, 21, 0, 524295, 21, 0, 524296, 21, 0, 524297, 21, 0, 524298, 21, 0, 524299, 21, 0, 524300, 21, 0, 524301, 21, 0, 524302, 21, 0, 524303, 21, 0, 524304, 21, 0, 524305, 21, 0, 524306, 22, 0, 524317, 20, 0, 524318, 21, 0, 524319, 21, 0, 524320, 21, 0, 524321, 21, 0, 524322, 21, 0, 524323, 21, 0, 524324, 21, 0, 524325, 21, 0, 524326, 21, 0, 524327, 21, 0, 524328, 21, 0, 524329, 21, 0, 524330, 21, 0, 524331, 21, 0, 524332, 21, 0, 524333, 21, 0, 524334, 22, 0, 524338, 20, 0, 524339, 21, 0, 524340, 21, 0, 524341, 22, 0, 524343, 20, 0, 524344, 21, 0, 524345, 21, 0, 524346, 21, 0, 524347, 21, 0, 524348, 38, 0, 524349, 34, 0, 524359, 20, 0, 524360, 21, 0, 524361, 21, 0, 524362, 21, 0, 524363, 38, 0, 524364, 39, 0, 524365, 39, 0, 524366, 39, 0, 524367, 39, 0, 524368, 39, 0, 524369, 39, 0, 524370, 39, 0, 524371, 1, 0, 524372, 21, 0, 524373, 21, 0, 524374, 21, 0, 524375, 21, 0, 524376, 21, 0, 524377, 21, 0, 524378, 21, 0, 524379, 21, 0, 524380, 21, 0, 524381, 21, 0, 524382, 21, 0, 524383, 21, 0, 524384, 21, 0, 524385, 21, 0, 524386, 21, 0, 524387, 22, 0, 589826, 25, 0, 589827, 8, 0, 589828, 8, 0, 589829, 8, 0, 589830, 8, 0, 589831, 8, 0, 589832, 8, 0, 589833, 8, 0, 589834, 8, 0, 589835, 8, 0, 589836, 8, 0, 589837, 8, 0, 589838, 8, 0, 589839, 39, 0, 589840, 39, 0, 589841, 39, 0, 589842, 27, 0, 589853, 25, 0, 589854, 39, 0, 589855, 39, 0, 589856, 39, 0, 589857, 39, 0, 589858, 39, 0, 589859, 39, 0, 589860, 39, 0, 589861, 39, 0, 589862, 39, 0, 589863, 39, 0, 589864, 39, 0, 589865, 39, 0, 589866, 39, 0, 589867, 39, 0, 589868, 39, 0, 589869, 39, 0, 589870, 27, 0, 589874, 25, 0, 589875, 39, 0, 589876, 39, 0, 589877, 27, 0, 589879, 25, 0, 589880, 39, 0, 589881, 39, 0, 589882, 39, 0, 589883, 39, 0, 589884, 27, 0, 589895, 25, 0, 589896, 39, 0, 589897, 39, 0, 589898, 39, 0, 589899, 39, 0, 589900, 39, 0, 589901, 39, 0, 589902, 39, 0, 589903, 39, 0, 589904, 39, 0, 589905, 39, 0, 589906, 39, 0, 589907, 39, 0, 589908, 39, 0, 589909, 39, 0, 589910, 39, 0, 589911, 39, 0, 589912, 39, 0, 589913, 39, 0, 589914, 39, 0, 589915, 39, 0, 589916, 39, 0, 589917, 39, 0, 589918, 39, 0, 589919, 39, 0, 589920, 39, 0, 589921, 39, 0, 589922, 39, 0, 589923, 27, 0, 655362, 25, 0, 655363, 8, 0, 655364, 8, 0, 655365, 8, 0, 655366, 8, 0, 655367, 8, 0, 655368, 8, 0, 655369, 8, 0, 655370, 8, 0, 655371, 8, 0, 655372, 8, 0, 655373, 8, 0, 655374, 8, 0, 655375, 39, 0, 655376, 39, 0, 655377, 39, 0, 655378, 27, 0, 655389, 25, 0, 655390, 39, 0, 655391, 39, 0, 655392, 39, 0, 655393, 39, 0, 655394, 39, 0, 655395, 39, 0, 655396, 39, 0, 655397, 39, 0, 655398, 39, 0, 655399, 39, 0, 655400, 39, 0, 655401, 39, 0, 655402, 39, 0, 655403, 39, 0, 655404, 39, 0, 655405, 39, 0, 655406, 27, 0, 655410, 25, 0, 655411, 39, 0, 655412, 39, 0, 655413, 27, 0, 655415, 25, 0, 655416, 39, 0, 655417, 39, 0, 655418, 39, 0, 655419, 39, 0, 655420, 27, 0, 655431, 25, 0, 655432, 39, 0, 655433, 39, 0, 655434, 39, 0, 655435, 39, 0, 655436, 39, 0, 655437, 39, 0, 655438, 39, 0, 655439, 39, 0, 655440, 39, 0, 655441, 39, 0, 655442, 39, 0, 655443, 39, 0, 655444, 39, 0, 655445, 39, 0, 655446, 39, 0, 655447, 39, 0, 655448, 39, 0, 655449, 39, 0, 655450, 39, 0, 655451, 39, 0, 655452, 39, 0, 655453, 39, 0, 655454, 39, 0, 655455, 39, 0, 655456, 39, 0, 655457, 39, 0, 655458, 39, 0, 655459, 27, 0, 720898, 25, 0, 720899, 8, 0, 720900, 8, 0, 720901, 8, 0, 720902, 8, 0, 720903, 8, 0, 720904, 8, 0, 720905, 8, 0, 720906, 8, 0, 720907, 8, 0, 720908, 8, 0, 720909, 8, 0, 720910, 8, 0, 720911, 39, 0, 720912, 39, 0, 720913, 39, 0, 720914, 27, 0, 720925, 25, 0, 720926, 39, 0, 720927, 39, 0, 720928, 39, 0, 720929, 39, 0, 720930, 39, 0, 720931, 39, 0, 720932, 39, 0, 720933, 39, 0, 720934, 39, 0, 720935, 39, 0, 720936, 39, 0, 720937, 39, 0, 720938, 39, 0, 720939, 39, 0, 720940, 39, 0, 720941, 39, 0, 720942, 27, 0, 720946, 25, 0, 720947, 39, 0, 720948, 39, 0, 720949, 27, 0, 720951, 25, 0, 720952, 39, 0, 720953, 39, 0, 720954, 39, 0, 720955, 39, 0, 720956, 27, 0, 720967, 25, 0, 720968, 39, 0, 720969, 39, 0, 720970, 39, 0, 720971, 39, 0, 720972, 39, 0, 720973, 39, 0, 720974, 39, 0, 720975, 39, 0, 720976, 39, 0, 720977, 39, 0, 720978, 39, 0, 720979, 39, 0, 720980, 39, 0, 720981, 39, 0, 720982, 39, 0, 720983, 39, 0, 720984, 39, 0, 720985, 39, 0, 720986, 39, 0, 720987, 39, 0, 720988, 39, 0, 720989, 39, 0, 720990, 39, 0, 720991, 39, 0, 720992, 39, 0, 720993, 39, 0, 720994, 39, 0, 720995, 27, 0, 786434, 25, 0, 786435, 8, 0, 786436, 8, 0, 786437, 8, 0, 786438, 8, 0, 786439, 8, 0, 786440, 8, 0, 786441, 8, 0, 786442, 8, 0, 786443, 8, 0, 786444, 8, 0, 786445, 8, 0, 786446, 8, 0, 786447, 39, 0, 786448, 39, 0, 786449, 39, 0, 786450, 27, 0, 786461, 25, 0, 786462, 39, 0, 786463, 39, 0, 786464, 39, 0, 786465, 39, 0, 786466, 39, 0, 786467, 39, 0, 786468, 39, 0, 786469, 39, 0, 786470, 39, 0, 786471, 39, 0, 786472, 39, 0, 786473, 39, 0, 786474, 39, 0, 786475, 39, 0, 786476, 39, 0, 786477, 39, 0, 786478, 27, 0, 786482, 25, 0, 786483, 39, 0, 786484, 39, 0, 786485, 27, 0, 786487, 25, 0, 786488, 39, 0, 786489, 39, 0, 786490, 39, 0, 786491, 39, 0, 786492, 27, 0, 786503, 25, 0, 786504, 39, 0, 786505, 39, 0, 786506, 39, 0, 786507, 39, 0, 786508, 39, 0, 786509, 39, 0, 786510, 39, 0, 786511, 39, 0, 786512, 39, 0, 786513, 39, 0, 786514, 39, 0, 786515, 39, 0, 786516, 39, 0, 786517, 39, 0, 786518, 39, 0, 786519, 39, 0, 786520, 39, 0, 786521, 39, 0, 786522, 39, 0, 786523, 39, 0, 786524, 39, 0, 786525, 39, 0, 786526, 39, 0, 786527, 39, 0, 786528, 39, 0, 786529, 39, 0, 786530, 39, 0, 786531, 27, 0, 851970, 25, 0, 851971, 8, 0, 851972, 8, 0, 851973, 8, 0, 851974, 8, 0, 851975, 8, 0, 851976, 8, 0, 851977, 8, 0, 851978, 8, 0, 851979, 8, 0, 851980, 8, 0, 851981, 8, 0, 851982, 8, 0, 851983, 39, 0, 851984, 39, 0, 851985, 39, 0, 851986, 27, 0, 851997, 25, 0, 851998, 39, 0, 851999, 39, 0, 852000, 39, 0, 852001, 39, 0, 852002, 39, 0, 852003, 39, 0, 852004, 39, 0, 852005, 39, 0, 852006, 39, 0, 852007, 39, 0, 852008, 39, 0, 852009, 39, 0, 852010, 39, 0, 852011, 39, 0, 852012, 39, 0, 852013, 39, 0, 852014, 27, 0, 852018, 25, 0, 852019, 39, 0, 852020, 39, 0, 852021, 27, 0, 852023, 25, 0, 852024, 39, 0, 852025, 39, 0, 852026, 39, 0, 852027, 39, 0, 852028, 27, 0, 852039, 25, 0, 852040, 39, 0, 852041, 39, 0, 852042, 39, 0, 852043, 39, 0, 852044, 39, 0, 852045, 39, 0, 852046, 39, 0, 852047, 39, 0, 852048, 39, 0, 852049, 39, 0, 852050, 39, 0, 852051, 39, 0, 852052, 39, 0, 852053, 39, 0, 852054, 39, 0, 852055, 39, 0, 852056, 39, 0, 852057, 39, 0, 852058, 39, 0, 852059, 39, 0, 852060, 39, 0, 852061, 39, 0, 852062, 39, 0, 852063, 39, 0, 852064, 39, 0, 852065, 39, 0, 852066, 39, 0, 852067, 39, 0, 917506, 25, 0, 917507, 8, 0, 917508, 8, 0, 917509, 8, 0, 917510, 8, 0, 917511, 8, 0, 917512, 8, 0, 917513, 8, 0, 917514, 8, 0, 917515, 8, 0, 917516, 8, 0, 917517, 8, 0, 917518, 8, 0, 917519, 39, 0, 917520, 39, 0, 917521, 39, 0, 917522, 27, 0, 917533, 25, 0, 917534, 39, 0, 917535, 39, 0, 917536, 39, 0, 917537, 39, 0, 917538, 39, 0, 917539, 39, 0, 917540, 39, 0, 917541, 39, 0, 917542, 39, 0, 917543, 39, 0, 917544, 39, 0, 917545, 39, 0, 917546, 39, 0, 917547, 39, 0, 917548, 39, 0, 917549, 39, 0, 917550, 27, 0, 917554, 25, 0, 917555, 39, 0, 917556, 39, 0, 917557, 27, 0, 917559, 25, 0, 917560, 39, 0, 917561, 39, 0, 917562, 39, 0, 917563, 39, 0, 917564, 27, 0, 917575, 25, 0, 917576, 39, 0, 917577, 39, 0, 917578, 39, 0, 917579, 39, 0, 917580, 39, 0, 917581, 39, 0, 917582, 39, 0, 917583, 39, 0, 917584, 39, 0, 917585, 39, 0, 917586, 39, 0, 917587, 39, 0, 917588, 39, 0, 917589, 39, 0, 917590, 39, 0, 917591, 39, 0, 917592, 39, 0, 917593, 39, 0, 917594, 39, 0, 917595, 39, 0, 917596, 39, 0, 917597, 39, 0, 917598, 39, 0, 917599, 39, 0, 917600, 39, 0, 917601, 39, 0, 917602, 39, 0, 917603, 39, 0 )
+
+[node name="Big_coin" parent="TileMap2" index="0" instance=ExtResource( 12 )]
+position = Vector2( -18, -24 )
+script = ExtResource( 23 )
+coinIndex = 2
+
+[node name="Big_coin2" parent="TileMap2" index="1" instance=ExtResource( 12 )]
+position = Vector2( 946, 84 )
+coinIndex = 1
+
+[node name="Big_coin3" parent="TileMap2" index="2" instance=ExtResource( 12 )]
+position = Vector2( 569, 40 )
+coinIndex = 0
+
+[node name="CameraEffects2" parent="." index="13" instance=ExtResource( 3 )]
+
+[node name="Enemy" parent="." index="14" instance=ExtResource( 13 )]
+position = Vector2( 227.346, 120 )
+direction = 1
+
+[node name="Sign" parent="." index="15" instance=ExtResource( 17 )]
+position = Vector2( 84, 118 )
+
+[node name="Hplatform" parent="." index="16" instance=ExtResource( 14 )]
+speed = 4.0
+startPos = Vector2( 330, 140 )
+endPos = Vector2( 440, 140 )
+can_jump_through = false
+
+[node name="Hplatform2" parent="." index="17" instance=ExtResource( 14 )]
+startPos = Vector2( 1016, 140 )
+endPos = Vector2( 1110, 140 )
+can_jump_through = false
+
+[node name="FallZone" parent="." index="18" instance=ExtResource( 15 )]
+position = Vector2( 487.933, 221.661 )
+scale = Vector2( 200, 1 )
+start_collision_size = Vector2( 20, 1 )
+
+[node name="LadderGenerator" parent="." index="19" instance=ExtResource( 16 )]
+position = Vector2( 824, 116 )
+height = 8
+
+[node name="rightsign2" type="Sprite" parent="." index="20"]
+position = Vector2( 1370, 118 )
+texture = ExtResource( 9 )
+__meta__ = {
+"_edit_lock_": true
+}
+
+[node name="platform 2 enemies" type="Node2D" parent="." index="21"]
+
+[node name="Spike-O2" parent="platform 2 enemies" index="0" instance=ExtResource( 20 )]
+position = Vector2( 1207.23, 26.791 )
+
+[node name="Spike-O3" parent="platform 2 enemies" index="1" instance=ExtResource( 20 )]
+position = Vector2( 698.528, 31.1088 )
+
+[node name="Enemy2" parent="platform 2 enemies" index="2" instance=ExtResource( 13 )]
+position = Vector2( 248.7, -25.9131 )
+detects_cliffs = true
+
+[node name="Enemy8" parent="platform 2 enemies" index="3" instance=ExtResource( 13 )]
+position = Vector2( 540.028, -37.9339 )
+direction = 1
+detects_cliffs = true
+
+[node name="Enemy9" parent="platform 2 enemies" index="4" instance=ExtResource( 13 )]
+position = Vector2( 703.37, -38.641 )
+detects_cliffs = true
+
+[node name="Enemy6" parent="platform 2 enemies" index="5" instance=ExtResource( 13 )]
+position = Vector2( 79.2159, -28.7042 )
+direction = 1
+detects_cliffs = true
+
+[node name="Enemy3" parent="platform 2 enemies" index="6" instance=ExtResource( 13 )]
+position = Vector2( 705.926, 117.157 )
+direction = 1
+detects_cliffs = true
+
+[node name="Enemy4" parent="platform 2 enemies" index="7" instance=ExtResource( 13 )]
+position = Vector2( 540, 118 )
+direction = 1
+detects_cliffs = true
+
+[node name="Enemy5" parent="platform 2 enemies" index="8" instance=ExtResource( 13 )]
+position = Vector2( 502, 118 )
+direction = 1
+detects_cliffs = true
+
+[node name="LadderGenerator2" parent="." index="22" instance=ExtResource( 16 )]
+position = Vector2( 984, 84 )
+height = 4
+
+[node name="B-owl Swawner" parent="." index="23" instance=ExtResource( 21 )]
+position = Vector2( 1722.6, -81.776 )
+start_scene = ExtResource( 19 )
+spawn_time = 5.0
+destroy_enemy_after_time = 100
+
+[node name="Coin23" parent="." index="24" instance=ExtResource( 6 )]
+position = Vector2( 64, 80 )
+script = SubResource( 1 )
+
+[node name="coins2" type="Node2D" parent="." index="25"]
+
+[node name="Coin" parent="coins2" index="0" instance=ExtResource( 6 )]
+position = Vector2( 200, 64 )
+script = SubResource( 1 )
+
+[node name="Coin9" parent="coins2" index="1" instance=ExtResource( 6 )]
+position = Vector2( 940, 36 )
+script = SubResource( 1 )
+
+[node name="Coin18" parent="coins2" index="2" instance=ExtResource( 6 )]
+position = Vector2( 984, 112 )
+script = SubResource( 1 )
+
+[node name="Coin10" parent="coins2" index="3" instance=ExtResource( 6 )]
+position = Vector2( 900, 36 )
+script = SubResource( 1 )
+
+[node name="Coin11" parent="coins2" index="4" instance=ExtResource( 6 )]
+position = Vector2( 860, 36 )
+script = SubResource( 1 )
+
+[node name="Coin12" parent="coins2" index="5" instance=ExtResource( 6 )]
+position = Vector2( 840, 76 )
+script = SubResource( 1 )
+
+[node name="Coin13" parent="coins2" index="6" instance=ExtResource( 6 )]
+position = Vector2( 840, 96 )
+script = SubResource( 1 )
+
+[node name="Coin14" parent="coins2" index="7" instance=ExtResource( 6 )]
+position = Vector2( 840, 116 )
+script = SubResource( 1 )
+
+[node name="Coin15" parent="coins2" index="8" instance=ExtResource( 6 )]
+position = Vector2( 598.358, 52.8756 )
+script = SubResource( 1 )
+
+[node name="Coin16" parent="coins2" index="9" instance=ExtResource( 6 )]
+position = Vector2( 479.698, 94.7244 )
+script = SubResource( 1 )
+
+[node name="Coin17" parent="coins2" index="10" instance=ExtResource( 6 )]
+position = Vector2( 502.802, 96.1494 )
+script = SubResource( 1 )
+
+[node name="Coin3" parent="coins2" index="11" instance=ExtResource( 6 )]
+position = Vector2( 188, -32 )
+script = SubResource( 1 )
+
+[node name="Coin4" parent="coins2" index="12" instance=ExtResource( 6 )]
+position = Vector2( 210, -32 )
+script = SubResource( 1 )
+
+[node name="Coin6" parent="coins2" index="13" instance=ExtResource( 6 )]
+position = Vector2( 980, -32 )
+script = SubResource( 1 )
+
+[node name="Coin8" parent="coins2" index="14" instance=ExtResource( 6 )]
+position = Vector2( 1208, -16 )
+script = SubResource( 1 )
+
+[node name="Coin19" parent="coins2" index="15" instance=ExtResource( 6 )]
+position = Vector2( 1592, 112 )
+script = SubResource( 1 )
+
+[node name="Coin20" parent="coins2" index="16" instance=ExtResource( 6 )]
+position = Vector2( 1576, 112 )
+script = SubResource( 1 )
+
+[node name="Coin21" parent="coins2" index="17" instance=ExtResource( 6 )]
+position = Vector2( 1480, 112 )
+script = SubResource( 1 )
+
+[node name="Coin22" parent="coins2" index="18" instance=ExtResource( 6 )]
+position = Vector2( 1496, 112 )
+script = SubResource( 1 )
+
+[node name="Coin7" parent="coins2" index="19" instance=ExtResource( 6 )]
+position = Vector2( 820, -32 )
+script = SubResource( 1 )
+
+[node name="Coin23" parent="coins2" index="20" instance=ExtResource( 6 )]
+position = Vector2( 928, -32 )
+script = SubResource( 1 )
+
+[node name="Coin5" parent="coins2" index="21" instance=ExtResource( 6 )]
+position = Vector2( 166, -32 )
+script = SubResource( 1 )
+
+[node name="Gun2" parent="." index="26" instance=ExtResource( 24 )]
+position = Vector2( 1494, 44 )
+direction = Vector2( -1, 0 )
+cooldown = 4
+
+[node name="Gun3" parent="." index="27" instance=ExtResource( 24 )]
+position = Vector2( 1495.06, 82 )
+direction = Vector2( -1, 0 )
+cooldown = 4
+delay = 0
+
+[node name="Gun4" parent="." index="28" instance=ExtResource( 24 )]
+position = Vector2( 1496, 18 )
+direction = Vector2( -1, 0 )
+cooldown = 4
+delay = 3
+
+[node name="Tower" parent="." index="29" instance=ExtResource( 11 )]
+position = Vector2( 1520, 48 )
+script = SubResource( 2 )
+target_scene = ExtResource( 22 )
+
+[node name="Node" type="Node" parent="Tower" index="5"]
+
+[node name="heartjar" parent="." index="30" instance=ExtResource( 26 )]
+position = Vector2( 1428, 120 )
+
+[node name="heartjar2" parent="." index="31" instance=ExtResource( 26 )]
+position = Vector2( 856, 120 )
+
+[node name="HFollower" type="Node2D" parent="." index="33"]
+script = ExtResource( 4 )
+
+[node name="CameraFixers" type="Node2D" parent="." index="34"]
+
+[node name="CameraFixer1" parent="CameraFixers" index="0" instance=ExtResource( 5 )]
+position = Vector2( 623, 16 )
+min_pos = Vector2( -2000, -108 )
+max_pos = Vector2( 5000, -108 )
+target = NodePath("../../Player")
+
+[node name="Changer1" type="Area2D" parent="CameraFixers" index="1"]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="CameraFixers/Changer1" index="0"]
+position = Vector2( 504, -6 )
+shape = SubResource( 3 )
+
+[node name="CameraFixer2" parent="CameraFixers" index="2" instance=ExtResource( 5 )]
+position = Vector2( 623, 16 )
+min_pos = Vector2( -2000, 108 )
+max_pos = Vector2( 5000, 108 )
+target = NodePath("../../Player")
+
+[node name="Changer2" type="Area2D" parent="CameraFixers" index="3"]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="CameraFixers/Changer2" index="0"]
+position = Vector2( 498, 24 )
+shape = SubResource( 3 )
+
+[node name="rightsign" type="Sprite" parent="." index="35"]
+position = Vector2( 954, -26 )
+scale = Vector2( -1, 1 )
+texture = ExtResource( 9 )
+
+[node name="StuffThatAppears2" type="Node2D" parent="." index="37"]
+visible = false
+
+[node name="Coin3" parent="StuffThatAppears2" index="0" instance=ExtResource( 6 )]
+position = Vector2( 56, -31.994 )
+
+[node name="Coin" parent="StuffThatAppears2" index="1" instance=ExtResource( 6 )]
+position = Vector2( 92, -32 )
+
+[node name="Coin2" parent="StuffThatAppears2" index="2" instance=ExtResource( 6 )]
+position = Vector2( 122, -32 )
+
+[node name="HPlatform" parent="StuffThatAppears2" index="3" instance=ExtResource( 10 )]
+position = Vector2( 325, -9 )
+
+[node name="HPlatform2" parent="StuffThatAppears2" index="4" instance=ExtResource( 10 )]
+position = Vector2( 399, -9 )
+
+[node name="HPlatform3" parent="StuffThatAppears2" index="5" instance=ExtResource( 10 )]
+position = Vector2( 361, -9 )
+
+[node name="HPlatform4" parent="StuffThatAppears2" index="6" instance=ExtResource( 10 )]
+position = Vector2( 1017, -8 )
+
+[node name="HPlatform5" parent="StuffThatAppears2" index="7" instance=ExtResource( 10 )]
+position = Vector2( 770, -9 )
+
+[node name="HPlatform6" parent="StuffThatAppears2" index="8" instance=ExtResource( 10 )]
+position = Vector2( 1080, 34 )
+
+[node name="HPlatform7" parent="StuffThatAppears2" index="9" instance=ExtResource( 10 )]
+position = Vector2( 1138, 82 )
+
+[node name="HeartJar" parent="StuffThatAppears2" index="10" instance=ExtResource( 26 )]
+position = Vector2( 10, -13.994 )
+
+[node name="HPlatform8" parent="StuffThatAppears2" index="11" instance=ExtResource( 10 )]
+position = Vector2( 434, -10 )
+
+[node name="HPlatform9" parent="StuffThatAppears2" index="12" instance=ExtResource( 10 )]
+position = Vector2( 788, -9 )
+
+[connection signal="body_entered" from="LadderGenerator/Ladder" to="LadderGenerator/Ladder" method="_on_Ladder_body_entered"]
+[connection signal="body_exited" from="LadderGenerator/Ladder" to="LadderGenerator/Ladder" method="_on_Ladder_body_exited"]
+[connection signal="body_entered" from="LadderGenerator/Ladder2" to="LadderGenerator/Ladder2" method="_on_Ladder_body_entered"]
+[connection signal="body_exited" from="LadderGenerator/Ladder2" to="LadderGenerator/Ladder2" method="_on_Ladder_body_exited"]
+[connection signal="body_entered" from="LadderGenerator/Ladder3" to="LadderGenerator/Ladder3" method="_on_Ladder_body_entered"]
+[connection signal="body_exited" from="LadderGenerator/Ladder3" to="LadderGenerator/Ladder3" method="_on_Ladder_body_exited"]
+[connection signal="body_entered" from="LadderGenerator/Ladder4" to="LadderGenerator/Ladder4" method="_on_Ladder_body_entered"]
+[connection signal="body_exited" from="LadderGenerator/Ladder4" to="LadderGenerator/Ladder4" method="_on_Ladder_body_exited"]
+[connection signal="body_entered" from="LadderGenerator/Ladder5" to="LadderGenerator/Ladder5" method="_on_Ladder_body_entered"]
+[connection signal="body_exited" from="LadderGenerator/Ladder5" to="LadderGenerator/Ladder5" method="_on_Ladder_body_exited"]
+[connection signal="body_entered" from="LadderGenerator/Ladder6" to="LadderGenerator/Ladder6" method="_on_Ladder_body_entered"]
+[connection signal="body_exited" from="LadderGenerator/Ladder6" to="LadderGenerator/Ladder6" method="_on_Ladder_body_exited"]
+[connection signal="body_entered" from="LadderGenerator/Ladder7" to="LadderGenerator/Ladder7" method="_on_Ladder_body_entered"]
+[connection signal="body_exited" from="LadderGenerator/Ladder7" to="LadderGenerator/Ladder7" method="_on_Ladder_body_exited"]
+[connection signal="body_entered" from="LadderGenerator2/Ladder" to="LadderGenerator2/Ladder" method="_on_Ladder_body_entered"]
+[connection signal="body_exited" from="LadderGenerator2/Ladder" to="LadderGenerator2/Ladder" method="_on_Ladder_body_exited"]
+[connection signal="body_entered" from="LadderGenerator2/Ladder2" to="LadderGenerator2/Ladder2" method="_on_Ladder_body_entered"]
+[connection signal="body_exited" from="LadderGenerator2/Ladder2" to="LadderGenerator2/Ladder2" method="_on_Ladder_body_exited"]
+[connection signal="body_entered" from="LadderGenerator2/Ladder3" to="LadderGenerator2/Ladder3" method="_on_Ladder_body_entered"]
+[connection signal="body_exited" from="LadderGenerator2/Ladder3" to="LadderGenerator2/Ladder3" method="_on_Ladder_body_exited"]
+[connection signal="body_entered" from="CameraFixers/Changer1" to="CameraFixers/CameraFixer1" method="_on_CameraFixerChanger_body_entered"]
+[connection signal="body_entered" from="CameraFixers/Changer2" to="CameraFixers/CameraFixer2" method="_on_CameraFixerChanger_body_entered"]

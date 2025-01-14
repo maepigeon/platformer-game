@@ -1,0 +1,54 @@
+[gd_resource type="SpriteFrames" load_steps=10 format=2]
+
+[ext_resource path="res://art/player_crouch.png" type="Texture" id=1]
+[ext_resource path="res://art/player.png" type="Texture" id=2]
+[ext_resource path="res://art/player_r.png" type="Texture" id=3]
+[ext_resource path="res://art/player_squash.png" type="Texture" id=4]
+[ext_resource path="res://art/player_l.png" type="Texture" id=5]
+[ext_resource path="res://art/player_c.png" type="Texture" id=6]
+[ext_resource path="res://art/player_up.png" type="Texture" id=7]
+[ext_resource path="res://art/player_enter_door.png" type="Texture" id=8]
+[ext_resource path="res://art/player/player_taco.png" type="Texture" id=9]
+
+[resource]
+animations = [ {
+"frames": [ ExtResource( 2 ) ],
+"loop": true,
+"name": "default",
+"speed": 5.0
+}, {
+"frames": [ ExtResource( 4 ) ],
+"loop": true,
+"name": "squash",
+"speed": 5.0
+}, {
+"frames": [ ExtResource( 8 ) ],
+"loop": true,
+"name": "enter_door",
+"speed": 5.0
+}, {
+"frames": [ ExtResource( 8 ) ],
+"loop": true,
+"name": "climbing_idle",
+"speed": 5.0
+}, {
+"frames": [ ExtResource( 3 ), ExtResource( 6 ), ExtResource( 5 ), ExtResource( 6 ) ],
+"loop": true,
+"name": "walk",
+"speed": 10.0
+}, {
+"frames": [ ExtResource( 7 ), ExtResource( 8 ) ],
+"loop": true,
+"name": "climbing",
+"speed": 5.0
+}, {
+"frames": [ ExtResource( 1 ) ],
+"loop": true,
+"name": "crouch",
+"speed": 10.0
+}, {
+"frames": [ ExtResource( 9 ) ],
+"loop": true,
+"name": "got_item",
+"speed": 5.0
+} ]

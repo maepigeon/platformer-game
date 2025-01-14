@@ -1,0 +1,10 @@
+[gd_scene load_steps=4 format=2]
+
+[ext_resource path="res://art/platforms/cactus/cactus_body.tscn" type="PackedScene" id=1]
+[ext_resource path="res://art/platforms/cactus/cactus_head.tscn" type="PackedScene" id=2]
+[ext_resource path="res://art/platforms/cactus/cactus.gd" type="Script" id=3]
+
+[node name="cactus" type="Node2D"]
+script = ExtResource( 3 )
+body = ExtResource( 1 )
+head = ExtResource( 2 )

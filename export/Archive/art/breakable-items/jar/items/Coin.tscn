@@ -1,0 +1,97 @@
+[gd_scene load_steps=7 format=2]
+
+[ext_resource path="res://sounds/coin.wav" type="AudioStream" id=1]
+[ext_resource path="res://art/breakable-items/jar/items/coin.png" type="Texture" id=2]
+
+[sub_resource type="GDScript" id=1]
+script/source = "extends Area2D
+
+onready var anim_player: AnimationPlayer = get_node(\"AnimationPlayer\")
+export var points = 500
+
+var gone = false
+func _on_body_entered(body):
+	if !gone and body.is_in_group(\"Players\"):
+		anim_player.play(\"fade_out\")
+		gone = true
+		$coin_sound.play()
+		PlayerStats.increase_score(points)
+	_unique_function()
+
+func _unique_function():
+	pass
+"
+
+[sub_resource type="CircleShape2D" id=2]
+radius = 6.10187
+
+[sub_resource type="Animation" id=3]
+resource_name = "bouncing"
+length = 1.2
+loop = true
+tracks/0/type = "value"
+tracks/0/path = NodePath("coin:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.5 ),
+"transitions": PoolRealArray( 0.517633, 3.48219 ),
+"update": 0,
+"values": [ Vector2( 0, 0.006 ), Vector2( 0, -8 ) ]
+}
+
+[sub_resource type="Animation" id=4]
+resource_name = "fade_out"
+length = 0.5
+tracks/0/type = "value"
+tracks/0/path = NodePath("coin:modulate")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.5 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 0,
+"values": [ Color( 1, 1, 1, 1 ), Color( 1, 1, 1, 0 ) ]
+}
+tracks/1/type = "method"
+tracks/1/path = NodePath(".")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = {
+"times": PoolRealArray( 0.5 ),
+"transitions": PoolRealArray( 1 ),
+"values": [ {
+"args": [  ],
+"method": "queue_free"
+} ]
+}
+
+[node name="Coin" type="Area2D"]
+position = Vector2( 0, 0.006 )
+collision_layer = 2147483650
+script = SubResource( 1 )
+
+[node name="coin" type="Sprite" parent="."]
+position = Vector2( 0, 0.006 )
+texture = ExtResource( 2 )
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource( 2 )
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+autoplay = "bouncing"
+anims/bouncing = SubResource( 3 )
+anims/fade_out = SubResource( 4 )
+
+[node name="coin_sound" type="AudioStreamPlayer" parent="."]
+stream = ExtResource( 1 )
+volume_db = -20.0
+bus = "Effects"
+
+[connection signal="body_entered" from="." to="." method="_on_body_entered"]

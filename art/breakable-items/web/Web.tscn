@@ -1,0 +1,64 @@
+[gd_scene load_steps=8 format=2]
+
+[ext_resource path="res://art/breakable-items/web/BreakablePlatform.gd" type="Script" id=1]
+[ext_resource path="res://art/breakable-items/web/web2x3.png" type="Texture" id=2]
+[ext_resource path="res://art/breakable-items/web/web2x1.png" type="Texture" id=3]
+[ext_resource path="res://art/breakable-items/web/web2x2.png" type="Texture" id=4]
+
+[sub_resource type="RectangleShape2D" id=1]
+extents = Vector2( 16.5142, 3.49913 )
+
+[sub_resource type="RectangleShape2D" id=2]
+extents = Vector2( 17.667, 2.90453 )
+
+[sub_resource type="Animation" id=3]
+resource_name = "New Anim"
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite:texture")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.1, 0.2 ),
+"transitions": PoolRealArray( 1, 1, 1 ),
+"update": 1,
+"values": [ ExtResource( 3 ), ExtResource( 4 ), ExtResource( 2 ) ]
+}
+tracks/1/type = "method"
+tracks/1/path = NodePath(".")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = {
+"times": PoolRealArray( 0.3 ),
+"transitions": PoolRealArray( 1 ),
+"values": [ {
+"args": [  ],
+"method": "delete"
+} ]
+}
+
+[node name="Web" type="StaticBody2D"]
+collision_layer = 16
+script = ExtResource( 1 )
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2( -0.297302, -1.48651 )
+shape = SubResource( 1 )
+one_way_collision = true
+
+[node name="Area2D" type="Area2D" parent="."]
+collision_layer = 16
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
+position = Vector2( -0.297302, -7.13524 )
+shape = SubResource( 2 )
+
+[node name="Sprite" type="Sprite" parent="."]
+texture = ExtResource( 3 )
+
+[node name="Anim" type="AnimationPlayer" parent="."]
+"anims/New Anim" = SubResource( 3 )
+[connection signal="body_entered" from="Area2D" to="." method="_on_Area2D_body_entered"]

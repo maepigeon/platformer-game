@@ -1,0 +1,41 @@
+[gd_scene load_steps=4 format=2]
+
+[ext_resource path="res://art/player/CameraFixer.gd" type="Script" id=1]
+[ext_resource path="res://art/player/CameraFixer.tscn" type="PackedScene" id=2]
+
+[sub_resource type="RectangleShape2D" id=1]
+extents = Vector2( 1268, 4 )
+
+[node name="CameraFixers" type="Node2D"]
+
+[node name="CameraFixer1" type="Node2D" parent="." groups=[
+"CameraFixers",
+] instance=ExtResource( 2 )]
+position = Vector2( 623, 16 )
+script = ExtResource( 1 )
+min_pos = Vector2( -2000, -108 )
+max_pos = Vector2( 5000, -108 )
+target = NodePath("../../Player")
+
+[node name="Changer1" type="Area2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Changer1"]
+position = Vector2( 504, 0 )
+shape = SubResource( 1 )
+
+[node name="CameraFixer2" type="Node2D" parent="." groups=[
+"CameraFixers",
+] instance=ExtResource( 2 )]
+position = Vector2( 623, 16 )
+script = ExtResource( 1 )
+min_pos = Vector2( -2000, 108 )
+max_pos = Vector2( 5000, 108 )
+target = NodePath("../../Player")
+
+[node name="Changer2" type="Area2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Changer2"]
+position = Vector2( 498, 12 )
+shape = SubResource( 1 )
+[connection signal="body_entered" from="Changer1" to="CameraFixer1" method="_on_CameraFixerChanger_body_entered"]
+[connection signal="body_entered" from="Changer2" to="CameraFixer2" method="_on_CameraFixerChanger_body_entered"]

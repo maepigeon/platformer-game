@@ -1,0 +1,19 @@
+[gd_scene load_steps=5 format=2]
+
+[ext_resource path="res://art/enemies/worm/Worm.gd" type="Script" id=1]
+[ext_resource path="res://art/enemies/worm/wormhead.tscn" type="PackedScene" id=2]
+[ext_resource path="res://art/enemies/worm/wormtail.tscn" type="PackedScene" id=3]
+[ext_resource path="res://art/enemies/worm/wormbody.tscn" type="PackedScene" id=4]
+
+[node name="Worm" type="Node2D" groups=[
+"Enemies",
+"Worm",
+]]
+position = Vector2( 0, -2394.48 )
+z_index = -1
+script = ExtResource( 1 )
+height = 10
+body = ExtResource( 4 )
+head = ExtResource( 2 )
+tail = ExtResource( 3 )
+vel = Vector2( 0, -48 )

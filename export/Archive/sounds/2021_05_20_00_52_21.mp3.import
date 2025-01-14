@@ -1,0 +1,15 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+path="res://.import/2021_05_20_00_52_21.mp3-270950af3265d71f482f7bea4fde8e8d.mp3str"
+
+[deps]
+
+source_file="res://sounds/2021_05_20_00_52_21.mp3"
+dest_files=[ "res://.import/2021_05_20_00_52_21.mp3-270950af3265d71f482f7bea4fde8e8d.mp3str" ]
+
+[params]
+
+loop=true
+loop_offset=0
